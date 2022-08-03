@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 23,
+            "activePatchIndex": 25,
             "patches": [
                 {
                     "date": 1659534140763,
@@ -100,6 +100,14 @@
                 {
                     "date": 1659552672580,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { HttpResponse, HttpRequest, Controller, EmailValidator } from '../protocols/http'\r\n+import { HttpResponse, HttpRequest, Controller, EmailValidator } from '../protocols'\r\n import { MissingParamError, InvalidParamError } from '../errors'\r\n import { badRequest, serverError } from '../helpers/http-helper'\r\n \r\n export class SignUpController implements Controller {\r\n@@ -26,37 +26,5 @@\n       return serverError()\r\n     }\r\n   }\r\n   \r\n-}\n-import { HttpResponse, HttpRequest } from '../protocols/http'\r\n-import { MissingParamError, InvalidParamError } from '../errors'\r\n-import { badRequest, serverError } from '../helpers/http-helper'\r\n-import { Controller } from '../protocols/controller'\r\n-import { EmailValidator } from '../protocols/email-validator'\r\n-\r\n-export class SignUpController implements Controller {\r\n-\r\n-  private readonly emailValidator: EmailValidator\r\n-\r\n-  constructor (emailValidator: EmailValidator) {\r\n-    this.emailValidator = emailValidator\r\n-  }\r\n-\r\n-  handle (httpRequest: HttpRequest): HttpResponse {\r\n-    try {\r\n-      const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']\r\n-      for (const field of requiredFields) {\r\n-        if (!httpRequest.body[field]) {\r\n-          return badRequest(new MissingParamError(field))  \r\n-        }\r\n-      }\r\n-      const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n-      if (!isValid) {\r\n-        return badRequest(new InvalidParamError('email'))\r\n-      }\r\n-    } catch (error) {\r\n-      return serverError()\r\n-    }\r\n-  }\r\n-  \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659554674937,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,11 @@\n         if (!httpRequest.body[field]) {\r\n           return badRequest(new MissingParamError(field))  \r\n         }\r\n       }\r\n+      if (httpRequest.body.password !== httpRequest.body.passwordConfirmatiion) {\r\n+        return badRequest(new InvalidParamError('passwordConfirmation'))\r\n+      }\r\n       const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n       if (!isValid) {\r\n         return badRequest(new InvalidParamError('email'))\r\n       }\r\n"
+                },
+                {
+                    "date": 1659556169653,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n         if (!httpRequest.body[field]) {\r\n           return badRequest(new MissingParamError(field))  \r\n         }\r\n       }\r\n-      if (httpRequest.body.password !== httpRequest.body.passwordConfirmatiion) {\r\n+      if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {\r\n         return badRequest(new InvalidParamError('passwordConfirmation'))\r\n       }\r\n       const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n       if (!isValid) {\r\n"
                 }
             ],
             "date": 1659534140763,
