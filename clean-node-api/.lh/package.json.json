@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1659533400769,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1659534041440,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n   \"version\": \"1.0.0\",\n   \"description\": \"\",\n   \"main\": \"index.js\",\n   \"scripts\": {\n-    \"test\": \"jest --passWithNoTests\",\n+    \"test\": \"jest --passWithNoTests --watch\",\n     \"test:staged\": \"jest --passWithNoTests\"\n   },\n   \"keywords\": [],\n   \"author\": \"\",\n"
                 }
             ],
             "date": 1659533400769,
