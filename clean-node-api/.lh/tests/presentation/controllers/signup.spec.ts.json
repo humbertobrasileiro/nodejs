@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 25,
+            "activePatchIndex": 34,
             "patches": [
                 {
                     "date": 1659534006938,
@@ -108,6 +108,42 @@
                 {
                     "date": 1659549053494,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,8 +106,8 @@\n         passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n     sut.handle(httpRequest)\r\n-    expect(isValidSpy).toHaveBeenCalledWith('')\r\n+    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')\r\n   })\r\n \r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659549402243,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,8 +106,8 @@\n         passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n     sut.handle(httpRequest)\r\n-    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')\r\n+    expect(isValidSpy).toHaveBeenCalledWith('email@mail.com')\r\n   })\r\n \r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659549465619,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,8 +106,8 @@\n         passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n     sut.handle(httpRequest)\r\n-    expect(isValidSpy).toHaveBeenCalledWith('email@mail.com')\r\n+    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')\r\n   })\r\n \r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659550125312,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,9 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n import { InvalidParamError } from '../../../src/presentation/errors/invalid-param-error'\r\n import { EmailValidator } from '../../../src/presentation/protocols/email-validator'\r\n+import { ServerError } from '../../../src/presentation/errors/server-error'\r\n \r\n interface SutTypes {\r\n   sut: SignUpController\r\n   emailValidatorStub: EmailValidator\r\n@@ -109,5 +110,29 @@\n     sut.handle(httpRequest)\r\n     expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')\r\n   })\r\n \r\n+  test('Should return 500 if EmailValidator throws', () => {\r\n+    class EmailValidatorThrow implements EmailValidator {\r\n+      isValid (email: string): boolean {\r\n+        throw new Error(\"\")        \r\n+      }\r\n+    }\r\n+    const emailValidatorThrow = new EmailValidatorThrow()\r\n+    const sutThrow = new SignUpController(emailValidatorThrow)\r\n+\r\n+    const { sutThrow, emailValidatorThrow } = makeSut()\r\n+    jest.spyOn(emailValidatorThrow, 'isValid').mockReturnValueOnce(false)\r\n+    const httpRequest = {\r\n+      body: {\r\n+        name: 'any_name',\r\n+        email: 'any_email@mail.com',\r\n+        password: 'any_password',\r\n+        passwordConfirmation: 'any_password'\r\n+      }\r\n+    }\r\n+    const httpResponse = sut.handle(httpRequest)\r\n+    expect(httpResponse.statusCode).toBe(500)\r\n+    expect(httpResponse.body).toEqual(new ServerError())\r\n+  })\r\n+\r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659550166119,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -129,9 +129,9 @@\n         password: 'any_password',\r\n         passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n-    const httpResponse = sut.handle(httpRequest)\r\n+    const httpResponse = sutThrow.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(500)\r\n     expect(httpResponse.body).toEqual(new ServerError())\r\n   })\r\n \r\n"
+                },
+                {
+                    "date": 1659550882399,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -111,17 +111,16 @@\n     expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')\r\n   })\r\n \r\n   test('Should return 500 if EmailValidator throws', () => {\r\n-    class EmailValidatorThrow implements EmailValidator {\r\n+    class EmailValidatorStub implements EmailValidator {\r\n       isValid (email: string): boolean {\r\n         throw new Error(\"\")        \r\n       }\r\n     }\r\n-    const emailValidatorThrow = new EmailValidatorThrow()\r\n+    const emailValidatorThrow = new EmailValidatorStub()\r\n     const sutThrow = new SignUpController(emailValidatorThrow)\r\n \r\n-    const { sutThrow, emailValidatorThrow } = makeSut()\r\n     jest.spyOn(emailValidatorThrow, 'isValid').mockReturnValueOnce(false)\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n"
+                },
+                {
+                    "date": 1659550905319,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -113,9 +113,9 @@\n \r\n   test('Should return 500 if EmailValidator throws', () => {\r\n     class EmailValidatorStub implements EmailValidator {\r\n       isValid (email: string): boolean {\r\n-        throw new Error(\"\")        \r\n+        throw new Error()        \r\n       }\r\n     }\r\n     const emailValidatorThrow = new EmailValidatorStub()\r\n     const sutThrow = new SignUpController(emailValidatorThrow)\r\n"
+                },
+                {
+                    "date": 1659550950618,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -116,9 +116,9 @@\n       isValid (email: string): boolean {\r\n         throw new Error()        \r\n       }\r\n     }\r\n-    const emailValidatorThrow = new EmailValidatorStub()\r\n+    const emailValidatorStub = new EmailValidatorStub()\r\n     const sutThrow = new SignUpController(emailValidatorThrow)\r\n \r\n     jest.spyOn(emailValidatorThrow, 'isValid').mockReturnValueOnce(false)\r\n     const httpRequest = {\r\n"
+                },
+                {
+                    "date": 1659550999104,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -117,11 +117,11 @@\n         throw new Error()        \r\n       }\r\n     }\r\n     const emailValidatorStub = new EmailValidatorStub()\r\n-    const sutThrow = new SignUpController(emailValidatorThrow)\r\n+    const sutThrow = new SignUpController(emailValidatorStub)\r\n \r\n-    jest.spyOn(emailValidatorThrow, 'isValid').mockReturnValueOnce(false)\r\n+    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659551088410,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -117,20 +117,18 @@\n         throw new Error()        \r\n       }\r\n     }\r\n     const emailValidatorStub = new EmailValidatorStub()\r\n-    const sutThrow = new SignUpController(emailValidatorStub)\r\n-\r\n-    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)\r\n+    const sut = new SignUpController(emailValidatorStub)\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n         password: 'any_password',\r\n         passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n-    const httpResponse = sutThrow.handle(httpRequest)\r\n+    const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(500)\r\n     expect(httpResponse.body).toEqual(new ServerError())\r\n   })\r\n \r\n"
                 }
             ],
             "date": 1659534006938,
