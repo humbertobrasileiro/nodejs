@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 8,
+            "activePatchIndex": 11,
             "patches": [
                 {
                     "date": 1659534006938,
@@ -40,6 +40,18 @@
                 {
                     "date": 1659543926399,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,6 +43,19 @@\n     expect(httpResponse.statusCode).toBe(400)\r\n     expect(httpResponse.body).toEqual(new MissingParamError('password'))\r\n   })\r\n \r\n+  test('Should return 400 if no password confirmation is provided', () => {\r\n+    const sut = new SignUpController()\r\n+    const httpRequest = {\r\n+      body: {\r\n+        name: 'any_name',\r\n+        email: 'any_email@mail.com',\r\n+        password: 'any_password'\r\n+      }\r\n+    }\r\n+    const httpResponse = sut.handle(httpRequest)\r\n+    expect(httpResponse.statusCode).toBe(400)\r\n+    expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n+  })\r\n \r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659545096876,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,11 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n \r\n+const makeSut = (): SignUpController => {\r\n+  return new SignUpController()\r\n+}\r\n+\r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n     const sut = new SignUpController()\r\n     const httpRequest = {\r\n"
+                },
+                {
+                    "date": 1659545167096,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,14 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n \r\n const makeSut = (): SignUpController => {\r\n-  return new SignUpController()\r\n+  return makeSut()\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n-    const sut = new SignUpController()\r\n+    const sut = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         email: 'any_email@mail.com',\r\n         password: 'any_password',\r\n@@ -20,9 +20,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('name'))\r\n   })\r\n \r\n   test('Should return 400 if no email is provided', () => {\r\n-    const sut = new SignUpController()\r\n+    const sut = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         password: 'any_password',\r\n@@ -34,9 +34,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('email'))\r\n   })\r\n \r\n   test('Should return 400 if no password is provided', () => {\r\n-    const sut = new SignUpController()\r\n+    const sut = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n@@ -48,9 +48,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('password'))\r\n   })\r\n \r\n   test('Should return 400 if no password confirmation is provided', () => {\r\n-    const sut = new SignUpController()\r\n+    const sut = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659545200495,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n \r\n const makeSut = (): SignUpController => {\r\n-  return makeSut()\r\n+  return new SignUpController()\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n"
                 }
             ],
             "date": 1659534006938,
