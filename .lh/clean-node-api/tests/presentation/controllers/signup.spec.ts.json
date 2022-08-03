@@ -1,0 +1,30 @@
+{
+    "sourceFile": "clean-node-api/tests/presentation/controllers/signup.spec.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1659531963276,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1659532090772,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { SignUpController } from '../../../../src/presentation/controllers/signup'\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n-    const sut = SignUpController()\r\n+    const sut = new SignUpController()\r\n     const httpRequest = {\r\n       body: {\r\n        // name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659533083740,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { SignUpController } from '../../../../src/presentation/controllers/signup'\r\n+import { SignUpController } from '../src/presentation/controllers/signup'\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n     const sut = new SignUpController()\r\n"
+                },
+                {
+                    "date": 1659533116116,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { SignUpController } from '../src/presentation/controllers/signup'\r\n+import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n     const sut = new SignUpController()\r\n"
+                }
+            ],
+            "date": 1659531963276,
+            "name": "Commit-0",
+            "content": "import { SignUpController } from '../../../../src/presentation/controllers/signup'\r\n\r\ndescribe('SignUp Controller', () => {\r\n  test('Should return 400 if no name is provided', () => {\r\n    const sut = SignUpController()\r\n    const httpRequest = {\r\n      body: {\r\n       // name: 'any_name',\r\n        email: 'any_email@mail.com',\r\n        password: 'any_password',\r\n        passwordConfirmation: 'any_password'\r\n      }\r\n    }\r\n    const httpResponse = sut.handle(httpRequest)\r\n    expect(httpResponse.statusCode).toBe(400)\r\n  })\r\n})"
+        }
+    ]
+}

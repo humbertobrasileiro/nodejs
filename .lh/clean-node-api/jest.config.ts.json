@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 8,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1659473348407,
@@ -40,6 +40,10 @@
                 {
                     "date": 1659474595053,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,5 @@\n-/*\n- * For a detailed explanation regarding each configuration property and type check, visit:\n- * https://jestjs.io/docs/configuration\n- */\n-\n-export default {\n+module.exports = {\n   roots: ['<rootDir>/tests'],\n   collectCoverageFrom: [\n     '<rootDir>/src/**/*.ts',\n     '!<rootDir>/src/main/**'\n@@ -19,5 +14,5 @@\n   moduleNameMapper: {\n     '@/tests/(.*)': '<rootDir>/tests/$1',\n     '@/(.*)': '<rootDir>/src/$1'\n   }\n-};\n+}\n"
+                },
+                {
+                    "date": 1659531624670,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,18 +1,22 @@\n-module.exports = {\n+/*\n+ * For a detailed explanation regarding each configuration property and type check, visit:\n+ * https://jestjs.io/docs/configuration\n+ */\n+\n+export default { \n   roots: ['<rootDir>/tests'],\n   collectCoverageFrom: [\n     '<rootDir>/src/**/*.ts',\n     '!<rootDir>/src/main/**'\n   ],\n   coverageDirectory: 'coverage',\n   coverageProvider: 'babel',\n   testEnvironment: 'node',\n-  preset: '@shelf/jest-mongodb',\n   transform: {\n     '.+\\\\.ts$': 'ts-jest'\n   },\n   moduleNameMapper: {\n     '@/tests/(.*)': '<rootDir>/tests/$1',\n     '@/(.*)': '<rootDir>/src/$1'\n   }\n-}\n+};\n"
                 }
             ],
             "date": 1659473348407,
