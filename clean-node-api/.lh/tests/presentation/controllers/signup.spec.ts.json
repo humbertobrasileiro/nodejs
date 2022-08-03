@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 23,
             "patches": [
                 {
                     "date": 1659534006938,
@@ -52,6 +52,54 @@
                 {
                     "date": 1659545200495,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n \r\n const makeSut = (): SignUpController => {\r\n-  return makeSut()\r\n+  return new SignUpController()\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n"
+                },
+                {
+                    "date": 1659545660466,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,6 +60,21 @@\n     const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(400)\r\n     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n   })\r\n+  \r\n+  test('Should return 400 if an invalid email is provided', () => {\r\n+    const sut = makeSut()\r\n+    const httpRequest = {\r\n+      body: {\r\n+        name: 'any_name',\r\n+        email: 'invalid_email@mail.com',\r\n+        password: 'any_password',\r\n+        passwordConfirmation: 'any_password'\r\n+      }\r\n+    }\r\n+    const httpResponse = sut.handle(httpRequest)\r\n+    expect(httpResponse.statusCode).toBe(400)\r\n+    expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n+  })\r\n \r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659545708405,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,8 +73,8 @@\n       }\r\n     }\r\n     const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(400)\r\n-    expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n+    expect(httpResponse.body).toEqual(new InvalidParamError('email'))\r\n   })\r\n \r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659545826710,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n+import { InvalidParamError } from '../../../src/presentation/errors/invalid-param-error'\r\n \r\n const makeSut = (): SignUpController => {\r\n   return new SignUpController()\r\n }\r\n"
+                },
+                {
+                    "date": 1659546053329,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,15 @@\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n import { InvalidParamError } from '../../../src/presentation/errors/invalid-param-error'\r\n \r\n const makeSut = (): SignUpController => {\r\n-  return new SignUpController()\r\n+  class EmailValidator {\r\n+    isValid (email: string): boolean {\r\n+      return true\r\n+    }\r\n+  }\r\n+  const emailValidator = new EmailValidator()\r\n+  return new SignUpController(emailValidator)\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n"
+                },
+                {
+                    "date": 1659546523346,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,16 +1,17 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n import { InvalidParamError } from '../../../src/presentation/errors/invalid-param-error'\r\n+import { EmailValidator } from '../../../src/presentation/protocols/email-validator'\r\n \r\n const makeSut = (): SignUpController => {\r\n-  class EmailValidator {\r\n+  class EmailValidatorStub implements EmailValidator {\r\n     isValid (email: string): boolean {\r\n       return true\r\n     }\r\n   }\r\n-  const emailValidator = new EmailValidator()\r\n-  return new SignUpController(emailValidator)\r\n+  const emailValidatorStub = new EmailValidatorStub()\r\n+  return new SignUpController(emailValidatorStub)\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n"
+                },
+                {
+                    "date": 1659547496151,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,16 +2,25 @@\n import { MissingParamError } from '../../../src/presentation/errors/missing-param-error'\r\n import { InvalidParamError } from '../../../src/presentation/errors/invalid-param-error'\r\n import { EmailValidator } from '../../../src/presentation/protocols/email-validator'\r\n \r\n-const makeSut = (): SignUpController => {\r\n+interface SutTypes {\r\n+  sut: SignUpController\r\n+  emailValidatorStub: EmailValidator\r\n+}\r\n+\r\n+const makeSut = (): SutTypes => {\r\n   class EmailValidatorStub implements EmailValidator {\r\n     isValid (email: string): boolean {\r\n       return true\r\n     }\r\n   }\r\n   const emailValidatorStub = new EmailValidatorStub()\r\n-  return new SignUpController(emailValidatorStub)\r\n+  const sut = new SignUpController(emailValidatorStub)\r\n+  return {\r\n+    sut,\r\n+    emailValidatorStub\r\n+  }\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n"
+                },
+                {
+                    "date": 1659547582929,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,9 +23,9 @@\n }\r\n \r\n describe('SignUp Controller', () => {\r\n   test('Should return 400 if no name is provided', () => {\r\n-    const sut = makeSut()\r\n+    const { sut } = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         email: 'any_email@mail.com',\r\n         password: 'any_password',\r\n"
+                },
+                {
+                    "date": 1659547607095,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -37,9 +37,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('name'))\r\n   })\r\n \r\n   test('Should return 400 if no email is provided', () => {\r\n-    const sut = makeSut()\r\n+    const { sut } = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         password: 'any_password',\r\n"
+                },
+                {
+                    "date": 1659547630723,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('email'))\r\n   })\r\n \r\n   test('Should return 400 if no password is provided', () => {\r\n-    const sut = makeSut()\r\n+    const { sut } = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659547655006,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -65,9 +65,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('password'))\r\n   })\r\n \r\n   test('Should return 400 if no password confirmation is provided', () => {\r\n-    const sut = makeSut()\r\n+    const { sut } = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'any_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659547732559,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -79,9 +79,9 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n   })\r\n   \r\n   test('Should return 400 if an invalid email is provided', () => {\r\n-    const sut = makeSut()\r\n+    const { sut } = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'invalid_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659547889199,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -79,9 +79,10 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n   })\r\n   \r\n   test('Should return 400 if an invalid email is provided', () => {\r\n-    const { sut } = makeSut()\r\n+    const { sut, emailValidatorStub } = makeSut()\r\n+    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'invalid_email@mail.com',\r\n"
                 }
             ],
             "date": 1659534006938,

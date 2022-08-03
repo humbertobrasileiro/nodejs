@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 14,
             "patches": [
                 {
                     "date": 1659534140763,
@@ -48,6 +48,22 @@
                 {
                     "date": 1659544814520,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,9 @@\n import { HttpResponse, HttpRequest } from '../protocols/http'\r\n import { MissingParamError } from '../errors/missing-param-error'\r\n import { badRequest } from '../helpers/http-helper'\r\n-export class SignUpController {\r\n+import { Controller } from '../protocols/controller'\r\n+export class SignUpController implements Controller {\r\n \r\n   handle (httpRequest: HttpRequest): HttpResponse {\r\n \r\n     const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']\r\n"
+                },
+                {
+                    "date": 1659546606653,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,16 @@\n import { HttpResponse, HttpRequest } from '../protocols/http'\r\n import { MissingParamError } from '../errors/missing-param-error'\r\n import { badRequest } from '../helpers/http-helper'\r\n import { Controller } from '../protocols/controller'\r\n+import { EmailValidator } from '../protocols/email-validator'\r\n+\r\n export class SignUpController implements Controller {\r\n \r\n+  constructor (emailValidator: EmailValidator) {\r\n+\r\n+  }\r\n+  \r\n   handle (httpRequest: HttpRequest): HttpResponse {\r\n \r\n     const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']\r\n     for (const field of requiredFields) {\r\n"
+                },
+                {
+                    "date": 1659546686153,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,12 +5,14 @@\n import { EmailValidator } from '../protocols/email-validator'\r\n \r\n export class SignUpController implements Controller {\r\n \r\n+  private readonly emailValidator: EmailValidator\r\n+\r\n   constructor (emailValidator: EmailValidator) {\r\n+    this.emailValidator = emailValidator\r\n+  }\r\n \r\n-  }\r\n-  \r\n   handle (httpRequest: HttpRequest): HttpResponse {\r\n \r\n     const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']\r\n     for (const field of requiredFields) {\r\n"
+                },
+                {
+                    "date": 1659546948886,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n     for (const field of requiredFields) {\r\n       if (!httpRequest.body[field]) {\r\n         return badRequest(new MissingParamError(field))  \r\n       }\r\n-  \r\n     }\r\n+    this.emailValidator.isValid(httpRequest.body.email)\r\n   }\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659547050469,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,9 @@\n import { MissingParamError } from '../errors/missing-param-error'\r\n import { badRequest } from '../helpers/http-helper'\r\n import { Controller } from '../protocols/controller'\r\n import { EmailValidator } from '../protocols/email-validator'\r\n+import { InvalidParamError } from '../errors/invalid-param-error'\r\n \r\n export class SignUpController implements Controller {\r\n \r\n   private readonly emailValidator: EmailValidator\r\n@@ -19,8 +20,12 @@\n       if (!httpRequest.body[field]) {\r\n         return badRequest(new MissingParamError(field))  \r\n       }\r\n     }\r\n-    this.emailValidator.isValid(httpRequest.body.email)\r\n+    const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n+\r\n+    if (!isValid) {\r\n+      return badRequest(new InvalidParamError('email'))\r\n+    }\r\n   }\r\n   \r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1659534140763,
