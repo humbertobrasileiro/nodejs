@@ -1,0 +1,18 @@
+{
+    "sourceFile": "package.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1659533400769,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1659533400769,
+            "name": "Commit-0",
+            "content": "{\n  \"name\": \"clean-node-api\",\n  \"version\": \"1.0.0\",\n  \"description\": \"\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"jest --passWithNoTests\",\n    \"test:staged\": \"jest --passWithNoTests\"\n  },\n  \"keywords\": [],\n  \"author\": \"\",\n  \"license\": \"ISC\",\n  \"devDependencies\": {\n    \"@types/jest\": \"^28.1.6\",\n    \"@types/node\": \"^18.6.3\",\n    \"@typescript-eslint/eslint-plugin\": \"^5.0.0\",\n    \"eslint\": \"^8.0.1\",\n    \"eslint-config-standard-with-typescript\": \"^22.0.0\",\n    \"eslint-plugin-import\": \"^2.25.2\",\n    \"eslint-plugin-n\": \"^15.0.0\",\n    \"eslint-plugin-promise\": \"^6.0.0\",\n    \"git-commit-msg-linter\": \"^4.1.3\",\n    \"husky\": \"^8.0.1\",\n    \"jest\": \"^28.1.3\",\n    \"lint-staged\": \"^13.0.3\",\n    \"ts-jest\": \"^28.0.7\",\n    \"typescript\": \"^4.7.4\"\n  },\n  \"dependencies\": {\n    \"ts-node\": \"^10.9.1\"\n  }\n}\n"
+        }
+    ]
+}
