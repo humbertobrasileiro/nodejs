@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 7,
             "patches": [
                 {
                     "date": 1659534140763,
@@ -28,6 +28,14 @@
                 {
                     "date": 1659538202282,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,21 +1,16 @@\n import { HttpResponse, HttpRequest } from '../protocols/http'\r\n import { MissingParamError } from '../errors/missing-param-error'\r\n+import { badRequest } from '../helpers/http-helper'\r\n export class SignUpController {\r\n \r\n   handle (httpRequest: HttpRequest): HttpResponse {\r\n \r\n     if (!httpRequest.body.name) {\r\n-      return {\r\n-        statusCode: 400,\r\n-        body: new MissingParamError('name')\r\n-      }  \r\n+      return badRequest(new MissingParamError('name'))  \r\n     }\r\n     if (!httpRequest.body.email) {\r\n-      return {\r\n-        statusCode: 400,\r\n-        body: new MissingParamError('email')\r\n-      }  \r\n+      return badRequest(new MissingParamError('email'))  \r\n     }\r\n   }\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659542992607,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,7 +10,15 @@\n     }\r\n     if (!httpRequest.body.email) {\r\n       return badRequest(new MissingParamError('email'))  \r\n     }\r\n+\r\n+    const requiredFields = ['name', 'email']\r\n+    for (const field of requiredFields) {\r\n+      if (!`httpRequest.body.${field}`) {\r\n+        return badRequest(new MissingParamError(field))  \r\n+      }\r\n+  \r\n+    }\r\n   }\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659543037259,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,18 +4,11 @@\n export class SignUpController {\r\n \r\n   handle (httpRequest: HttpRequest): HttpResponse {\r\n \r\n-    if (!httpRequest.body.name) {\r\n-      return badRequest(new MissingParamError('name'))  \r\n-    }\r\n-    if (!httpRequest.body.email) {\r\n-      return badRequest(new MissingParamError('email'))  \r\n-    }\r\n-\r\n     const requiredFields = ['name', 'email']\r\n     for (const field of requiredFields) {\r\n-      if (!`httpRequest.body.${field}`) {\r\n+      if (!httpRequest.body[field]) {\r\n         return badRequest(new MissingParamError(field))  \r\n       }\r\n   \r\n     }\r\n"
                 }
             ],
             "date": 1659534140763,
