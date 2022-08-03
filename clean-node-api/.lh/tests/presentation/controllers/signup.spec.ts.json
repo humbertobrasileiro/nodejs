@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1659534006938,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1659534612906,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,5 +14,21 @@\n     const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(400)\r\n     expect(httpResponse.body).toEqual(new Error('Missing param: name'))\r\n   })\r\n+\r\n+  test('Should return 400 if no name is provided', () => {\r\n+    const sut = new SignUpController()\r\n+    const httpRequest = {\r\n+      body: {\r\n+        name: 'any_name',\r\n+        // email: 'any_email@mail.com',\r\n+        password: 'any_password',\r\n+        passwordConfirmation: 'any_password'\r\n+      }\r\n+    }\r\n+    const httpResponse = sut.handle(httpRequest)\r\n+    expect(httpResponse.statusCode).toBe(400)\r\n+    expect(httpResponse.body).toEqual(new Error('Missing param: email'))\r\n+  })\r\n+\r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659534660117,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n     expect(httpResponse.statusCode).toBe(400)\r\n     expect(httpResponse.body).toEqual(new Error('Missing param: name'))\r\n   })\r\n \r\n-  test('Should return 400 if no name is provided', () => {\r\n+  test('Should return 400 if no email is provided', () => {\r\n     const sut = new SignUpController()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n"
                 }
             ],
             "date": 1659534006938,
