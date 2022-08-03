@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 20,
+            "activePatchIndex": 21,
             "patches": [
                 {
                     "date": 1659534140763,
@@ -88,6 +88,10 @@
                 {
                     "date": 1659551739501,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,8 @@\n import { badRequest, serverError } from '../helpers/http-helper'\r\n import { Controller } from '../protocols/controller'\r\n import { EmailValidator } from '../protocols/email-validator'\r\n import { InvalidParamError } from '../errors/invalid-param-error'\r\n-import { ServerError } from '../errors/server-error'\r\n \r\n export class SignUpController implements Controller {\r\n \r\n   private readonly emailValidator: EmailValidator\r\n"
+                },
+                {
+                    "date": 1659552019079,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,9 @@\n import { HttpResponse, HttpRequest } from '../protocols/http'\r\n-import { MissingParamError } from '../errors/missing-param-error'\r\n+import { MissingParamError, InvalidParamError } from '../errors'\r\n import { badRequest, serverError } from '../helpers/http-helper'\r\n import { Controller } from '../protocols/controller'\r\n import { EmailValidator } from '../protocols/email-validator'\r\n-import { InvalidParamError } from '../errors/invalid-param-error'\r\n \r\n export class SignUpController implements Controller {\r\n \r\n   private readonly emailValidator: EmailValidator\r\n"
                 }
             ],
             "date": 1659534140763,
