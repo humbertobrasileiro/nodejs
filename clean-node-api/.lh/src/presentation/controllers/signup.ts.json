@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 16,
             "patches": [
                 {
                     "date": 1659534140763,
@@ -64,6 +64,14 @@
                 {
                     "date": 1659547050469,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,9 @@\n import { MissingParamError } from '../errors/missing-param-error'\r\n import { badRequest } from '../helpers/http-helper'\r\n import { Controller } from '../protocols/controller'\r\n import { EmailValidator } from '../protocols/email-validator'\r\n+import { InvalidParamError } from '../errors/invalid-param-error'\r\n \r\n export class SignUpController implements Controller {\r\n \r\n   private readonly emailValidator: EmailValidator\r\n@@ -19,8 +20,12 @@\n       if (!httpRequest.body[field]) {\r\n         return badRequest(new MissingParamError(field))  \r\n       }\r\n     }\r\n-    this.emailValidator.isValid(httpRequest.body.email)\r\n+    const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n+\r\n+    if (!isValid) {\r\n+      return badRequest(new InvalidParamError('email'))\r\n+    }\r\n   }\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659549132598,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n       if (!httpRequest.body[field]) {\r\n         return badRequest(new MissingParamError(field))  \r\n       }\r\n     }\r\n-    const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n+    const isValid = this.emailValidator.isValid('outro@email.com')\r\n \r\n     if (!isValid) {\r\n       return badRequest(new InvalidParamError('email'))\r\n     }\r\n"
+                },
+                {
+                    "date": 1659549177999,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n       if (!httpRequest.body[field]) {\r\n         return badRequest(new MissingParamError(field))  \r\n       }\r\n     }\r\n-    const isValid = this.emailValidator.isValid('outro@email.com')\r\n+    const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n \r\n     if (!isValid) {\r\n       return badRequest(new InvalidParamError('email'))\r\n     }\r\n"
                 }
             ],
             "date": 1659534140763,

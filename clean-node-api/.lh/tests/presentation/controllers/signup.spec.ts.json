@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 23,
+            "activePatchIndex": 25,
             "patches": [
                 {
                     "date": 1659534006938,
@@ -100,6 +100,14 @@
                 {
                     "date": 1659547889199,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -79,9 +79,10 @@\n     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n   })\r\n   \r\n   test('Should return 400 if an invalid email is provided', () => {\r\n-    const { sut } = makeSut()\r\n+    const { sut, emailValidatorStub } = makeSut()\r\n+    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'invalid_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659549031064,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -94,5 +94,20 @@\n     expect(httpResponse.statusCode).toBe(400)\r\n     expect(httpResponse.body).toEqual(new InvalidParamError('email'))\r\n   })\r\n \r\n+  test('Should call EmailValidator with correct email', () => {\r\n+    const { sut, emailValidatorStub } = makeSut()\r\n+    const isValidSpy = jest.spyOn(emailValidatorStub, 'isValid')\r\n+    const httpRequest = {\r\n+      body: {\r\n+        name: 'any_name',\r\n+        email: 'any_email@mail.com',\r\n+        password: 'any_password',\r\n+        passwordConfirmation: 'any_password'\r\n+      }\r\n+    }\r\n+    sut.handle(httpRequest)\r\n+    expect(isValidSpy).toHaveBeenCalledWith('')\r\n+  })\r\n+\r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659549053494,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,8 +106,8 @@\n         passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n     sut.handle(httpRequest)\r\n-    expect(isValidSpy).toHaveBeenCalledWith('')\r\n+    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')\r\n   })\r\n \r\n })\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1659534006938,
