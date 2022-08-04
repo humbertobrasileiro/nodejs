@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 26,
+            "activePatchIndex": 29,
             "patches": [
                 {
                     "date": 1659534140763,
@@ -112,6 +112,18 @@
                 {
                     "date": 1659557439211,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,12 +17,13 @@\n         if (!httpRequest.body[field]) {\r\n           return badRequest(new MissingParamError(field))  \r\n         }\r\n       }\r\n-      if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {\r\n+      const { email, password, passwordConfirmation } = httpRequest.body\r\n+      if (password !== passwordConfirmation) {\r\n         return badRequest(new InvalidParamError('passwordConfirmation'))\r\n       }\r\n-      const isValid = this.emailValidator.isValid(httpRequest.body.email)\r\n+      const isValid = this.emailValidator.isValid(email)\r\n       if (!isValid) {\r\n         return badRequest(new InvalidParamError('email'))\r\n       }\r\n     } catch (error) {\r\n"
+                },
+                {
+                    "date": 1659571491550,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,16 @@\n import { HttpResponse, HttpRequest, Controller, EmailValidator } from '../protocols'\r\n import { MissingParamError, InvalidParamError } from '../errors'\r\n import { badRequest, serverError } from '../helpers/http-helper'\r\n+import { AddAccount } from '../../domain/usecases/add-account'\r\n \r\n export class SignUpController implements Controller {\r\n \r\n   private readonly emailValidator: EmailValidator\r\n \r\n-  constructor (emailValidator: EmailValidator) {\r\n+  constructor (emailValidator: EmailValidator, addAccount: AddAccount) {\r\n     this.emailValidator = emailValidator\r\n+    this.addAccount = addAccount\r\n   }\r\n \r\n   handle (httpRequest: HttpRequest): HttpResponse {\r\n     try {\r\n"
+                },
+                {
+                    "date": 1659571532051,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n \r\n export class SignUpController implements Controller {\r\n \r\n   private readonly emailValidator: EmailValidator\r\n+  private readonly addAccount: AddAccount\r\n \r\n   constructor (emailValidator: EmailValidator, addAccount: AddAccount) {\r\n     this.emailValidator = emailValidator\r\n     this.addAccount = addAccount\r\n"
+                },
+                {
+                    "date": 1659571818206,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,16 +20,21 @@\n         if (!httpRequest.body[field]) {\r\n           return badRequest(new MissingParamError(field))  \r\n         }\r\n       }\r\n-      const { email, password, passwordConfirmation } = httpRequest.body\r\n+      const { name, email, password, passwordConfirmation } = httpRequest.body\r\n       if (password !== passwordConfirmation) {\r\n         return badRequest(new InvalidParamError('passwordConfirmation'))\r\n       }\r\n       const isValid = this.emailValidator.isValid(email)\r\n       if (!isValid) {\r\n         return badRequest(new InvalidParamError('email'))\r\n       }\r\n+      this.addAccount.add({\r\n+        name,\r\n+        email,\r\n+        password\r\n+      })\r\n     } catch (error) {\r\n       return serverError()\r\n     }\r\n   }\r\n"
                 }
             ],
             "date": 1659534140763,

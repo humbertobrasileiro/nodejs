@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 44,
+            "activePatchIndex": 53,
             "patches": [
                 {
                     "date": 1659534006938,
@@ -184,6 +184,42 @@
                 {
                     "date": 1659555277492,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -81,38 +81,38 @@\n     const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(400)\r\n     expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))\r\n   })\r\n-  \r\n-  test('Should return 400 if an invalid email is provided', () => {\r\n-    const { sut, emailValidatorStub } = makeSut()\r\n-    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)\r\n+   \r\n+  test('Should return 400 if password confirmation fails', () => {\r\n+    const { sut } = makeSut()\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n-        email: 'invalid_email@mail.com',\r\n+        email: 'any_email@mail.com',\r\n         password: 'any_password',\r\n-        passwordConfirmation: 'any_password'\r\n+        passwordConfirmation: 'invalid_password'\r\n       }\r\n     }\r\n     const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(400)\r\n-    expect(httpResponse.body).toEqual(new InvalidParamError('email'))\r\n+    expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))\r\n   })\r\n-   \r\n-  test('Should return 400 if password confirmation fails', () => {\r\n-    const { sut } = makeSut()\r\n+\r\n+  test('Should return 400 if an invalid email is provided', () => {\r\n+    const { sut, emailValidatorStub } = makeSut()\r\n+    jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n         email: 'invalid_email@mail.com',\r\n         password: 'any_password',\r\n-        passwordConfirmation: 'invalid_password'\r\n+        passwordConfirmation: 'any_password'\r\n       }\r\n     }\r\n     const httpResponse = sut.handle(httpRequest)\r\n     expect(httpResponse.statusCode).toBe(400)\r\n-    expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))\r\n+    expect(httpResponse.body).toEqual(new InvalidParamError('email'))\r\n   })\r\n \r\n   test('Should call EmailValidator with correct email', () => {\r\n     const { sut, emailValidatorStub } = makeSut()\r\n"
+                },
+                {
+                    "date": 1659559615698,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -146,5 +146,24 @@\n     expect(httpResponse.statusCode).toBe(500)\r\n     expect(httpResponse.body).toEqual(new ServerError())\r\n   })\r\n \r\n+  test('Should call AddAccount with correct values', () => {\r\n+    const { sut } = makeSut()\r\n+    const addSpy = jest.spyOn(addAccountStub, 'add')\r\n+    const httpRequest = {\r\n+      body: {\r\n+        name: 'any_name',\r\n+        email: 'any_email@mail.com',\r\n+        password: 'any_password',\r\n+        passwordConfirmation: 'any_password'\r\n+      }\r\n+    }\r\n+    sut.handle(httpRequest)\r\n+    expect(addSpy).toHaveBeenCalledWith({\r\n+      name: 'any_name',\r\n+      email: 'any_email@mail.com',\r\n+      password: 'any_password'\r\n+    })\r\n+  })\r\n+\r\n })\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1659560090809,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,24 @@\n   return new EmailValidatorStub()\r\n \r\n }\r\n \r\n+const makeAddAccount = (): AddAccount => {\r\n+  class AddAccountStub implements AddAcount {\r\n+    isValid (account: AddAccountModel): AccountModel {\r\n+      const fakeAccount = {\r\n+        id: 'valid_id',\r\n+        nome: 'valid_name',\r\n+        email: 'valid_email@mail.com',\r\n+        password: 'valid_pessword'\r\n+      }\r\n+      return fakeAccount\r\n+    }\r\n+  }\r\n+  return new AddAccountStub()\r\n+\r\n+}\r\n+\r\n const makeSut = (): SutTypes => {\r\n   const emailValidatorStub = makeEmailValidator()\r\n   const sut = new SignUpController(emailValidatorStub)\r\n   return {\r\n"
+                },
+                {
+                    "date": 1659560474491,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n }\r\n \r\n const makeAddAccount = (): AddAccount => {\r\n   class AddAccountStub implements AddAcount {\r\n-    isValid (account: AddAccountModel): AccountModel {\r\n+    add (account: AddAccountModel): AccountModel {\r\n       const fakeAccount = {\r\n         id: 'valid_id',\r\n         nome: 'valid_name',\r\n         email: 'valid_email@mail.com',\r\n"
+                },
+                {
+                    "date": 1659570865237,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError, InvalidParamError, ServerError } from '../../../src/presentation/errors'\r\n import { EmailValidator } from '../../../src/presentation/protocols'\r\n-\r\n+import { AddAccount } from '../../../src/domain/usecases/add-account'\r\n interface SutTypes {\r\n   sut: SignUpController\r\n   emailValidatorStub: EmailValidator\r\n }\r\n"
+                },
+                {
+                    "date": 1659570922273,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError, InvalidParamError, ServerError } from '../../../src/presentation/errors'\r\n import { EmailValidator } from '../../../src/presentation/protocols'\r\n-import { AddAccount } from '../../../src/domain/usecases/add-account'\r\n+import { AddAccount, AddAccountModel } from '../../../src/domain/usecases/add-account'\r\n interface SutTypes {\r\n   sut: SignUpController\r\n   emailValidatorStub: EmailValidator\r\n }\r\n"
+                },
+                {
+                    "date": 1659571142235,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,9 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError, InvalidParamError, ServerError } from '../../../src/presentation/errors'\r\n import { EmailValidator } from '../../../src/presentation/protocols'\r\n import { AddAccount, AddAccountModel } from '../../../src/domain/usecases/add-account'\r\n+import { AccountModel } from '../../../src/domain/model/account'\r\n interface SutTypes {\r\n   sut: SignUpController\r\n   emailValidatorStub: EmailValidator\r\n }\r\n"
+                },
+                {
+                    "date": 1659571393948,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n import { AccountModel } from '../../../src/domain/model/account'\r\n interface SutTypes {\r\n   sut: SignUpController\r\n   emailValidatorStub: EmailValidator\r\n+  addAccountStub: AddAccount\r\n }\r\n \r\n const makeEmailValidator = (): EmailValidator => {\r\n   class EmailValidatorStub implements EmailValidator {\r\n@@ -35,12 +36,14 @@\n }\r\n \r\n const makeSut = (): SutTypes => {\r\n   const emailValidatorStub = makeEmailValidator()\r\n-  const sut = new SignUpController(emailValidatorStub)\r\n+  const addAccountStub = makeAddAccount()\r\n+  const sut = new SignUpController(emailValidatorStub, addAccountStub)\r\n   return {\r\n     sut,\r\n-    emailValidatorStub\r\n+    emailValidatorStub,\r\n+    addAccountStub\r\n   }\r\n }\r\n \r\n describe('SignUp Controller', () => {\r\n"
+                },
+                {
+                    "date": 1659571664018,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -167,9 +167,9 @@\n     expect(httpResponse.body).toEqual(new ServerError())\r\n   })\r\n \r\n   test('Should call AddAccount with correct values', () => {\r\n-    const { sut } = makeSut()\r\n+    const { sut, addAccountStub } = makeSut()\r\n     const addSpy = jest.spyOn(addAccountStub, 'add')\r\n     const httpRequest = {\r\n       body: {\r\n         name: 'any_name',\r\n"
+                },
+                {
+                    "date": 1659572401032,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { SignUpController } from '../../../src/presentation/controllers/signup'\r\n import { MissingParamError, InvalidParamError, ServerError } from '../../../src/presentation/errors'\r\n import { EmailValidator } from '../../../src/presentation/protocols'\r\n import { AddAccount, AddAccountModel } from '../../../src/domain/usecases/add-account'\r\n-import { AccountModel } from '../../../src/domain/model/account'\r\n+import { AccountModel } from '../../../src/domain/models/account'\r\n interface SutTypes {\r\n   sut: SignUpController\r\n   emailValidatorStub: EmailValidator\r\n   addAccountStub: AddAccount\r\n"
                 }
             ],
             "date": 1659534006938,
