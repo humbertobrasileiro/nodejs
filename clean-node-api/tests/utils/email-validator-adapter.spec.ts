@@ -12,7 +12,7 @@ describe('EmailValidator Adapter', () => {
     // correção by Humberto, o mock feito no curso faz com que tudo fique true
     jest.spyOn(validator, 'isEmail').mockImplementationOnce(() => {
       return false
-    })
+    })    
     const isValid = sut.isValid('invalid_email@mail.com')
     expect(isValid).toBe(false)
   })
