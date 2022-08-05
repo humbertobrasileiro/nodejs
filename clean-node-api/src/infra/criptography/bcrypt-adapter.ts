@@ -1,3 +1,4 @@
+import { rejects } from 'assert'
 import bcrypt from 'bcrypt'
 import { Encrypter } from '../../data/protocols/encrypter'
 
