@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { BcryptAdapter } from '../../../src/infra/criptography/bcrypt-adapter'
+import { BcryptAdapter } from '../../../../src/infra/criptography/bcrypt-adapter/bcrypt-adapter'
 
 const salt = 12
 
